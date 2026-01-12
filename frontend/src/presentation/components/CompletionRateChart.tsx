@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { DailyStat, WeeklyStat, MonthlyStat } from '../../types/statistics';
-import { format, parseISO } from 'date-fns';
+import { useChartData } from './useChartData';
 import './ChartContainer.css';
 
 interface CompletionRateChartProps {
@@ -26,43 +26,12 @@ export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
   monthlyStats,
   viewMode,
 }) => {
-  const formatDate = (dateStr: string, mode: string) => {
-    const date = parseISO(dateStr);
-    switch (mode) {
-      case 'day':
-        return format(date, 'M/d');
-      case 'week':
-        return format(date, 'M/d');
-      case 'month':
-        return dateStr; // YYYY-MM形式
-      default:
-        return dateStr;
-    }
-  };
-
-  const getData = () => {
-    switch (viewMode) {
-      case 'day':
-        return dailyStats.map((stat) => ({
-          date: formatDate(stat.date, 'day'),
-          completionRate: (stat.completion_rate * 100).toFixed(1),
-        }));
-      case 'week':
-        return weeklyStats.map((stat) => ({
-          date: formatDate(stat.week_start, 'week'),
-          completionRate: (stat.completion_rate * 100).toFixed(1),
-        }));
-      case 'month':
-        return monthlyStats.map((stat) => ({
-          date: stat.month,
-          completionRate: (stat.completion_rate * 100).toFixed(1),
-        }));
-      default:
-        return [];
-    }
-  };
-
-  const data = getData();
+  const chartData = useChartData({ dailyStats, weeklyStats, monthlyStats, viewMode });
+  
+  const data = chartData.map((item) => ({
+    date: item.date,
+    completionRate: item.completionRate,
+  }));
 
   return (
     <div className="chart-container">
@@ -76,7 +45,7 @@ export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
             label={{ value: '完了率 (%)', angle: -90, position: 'insideLeft' }}
           />
           <Tooltip
-            formatter={(value: string) => [`${value}%`, '完了率']}
+            formatter={(value: number) => [`${value.toFixed(1)}%`, '完了率']}
             labelFormatter={(label) => `期間: ${label}`}
           />
           <Legend />

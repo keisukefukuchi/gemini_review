@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { DailyStat, WeeklyStat, MonthlyStat } from '../../types/statistics';
-import { format, parseISO } from 'date-fns';
+import { useChartData } from './useChartData';
 import './ChartContainer.css';
 
 interface TaskCountChartProps {
@@ -26,49 +26,7 @@ export const TaskCountChart: React.FC<TaskCountChartProps> = ({
   monthlyStats,
   viewMode,
 }) => {
-  const formatDate = (dateStr: string, mode: string) => {
-    const date = parseISO(dateStr);
-    switch (mode) {
-      case 'day':
-        return format(date, 'M/d');
-      case 'week':
-        return format(date, 'M/d');
-      case 'month':
-        return dateStr; // YYYY-MM形式
-      default:
-        return dateStr;
-    }
-  };
-
-  const getData = () => {
-    switch (viewMode) {
-      case 'day':
-        return dailyStats.map((stat) => ({
-          date: formatDate(stat.date, 'day'),
-          total: stat.total_tasks,
-          completed: stat.completed_tasks,
-          incomplete: stat.total_tasks - stat.completed_tasks,
-        }));
-      case 'week':
-        return weeklyStats.map((stat) => ({
-          date: formatDate(stat.week_start, 'week'),
-          total: stat.total_tasks,
-          completed: stat.completed_tasks,
-          incomplete: stat.total_tasks - stat.completed_tasks,
-        }));
-      case 'month':
-        return monthlyStats.map((stat) => ({
-          date: stat.month,
-          total: stat.total_tasks,
-          completed: stat.completed_tasks,
-          incomplete: stat.total_tasks - stat.completed_tasks,
-        }));
-      default:
-        return [];
-    }
-  };
-
-  const data = getData();
+  const data = useChartData({ dailyStats, weeklyStats, monthlyStats, viewMode });
 
   return (
     <div className="chart-container">

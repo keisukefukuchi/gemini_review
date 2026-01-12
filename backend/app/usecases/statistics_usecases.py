@@ -16,14 +16,22 @@ class GetStatisticsUseCase:
         # サマリー情報を取得
         summary = self.repository.get_statistics(start_date, end_date)
 
-        # 日別統計を取得
-        daily_stats = self.repository.get_daily_stats(start_date, end_date)
+        # group_by に応じて必要な統計データのみ取得
+        daily_stats = []
+        weekly_stats = []
+        monthly_stats = []
 
-        # 週別統計を取得
-        weekly_stats = self.repository.get_weekly_stats(start_date, end_date)
-
-        # 月別統計を取得
-        monthly_stats = self.repository.get_monthly_stats(start_date, end_date)
+        if group_by == "day":
+            daily_stats = self.repository.get_daily_stats(start_date, end_date)
+        elif group_by == "week":
+            weekly_stats = self.repository.get_weekly_stats(start_date, end_date)
+        elif group_by == "month":
+            monthly_stats = self.repository.get_monthly_stats(start_date, end_date)
+        else:
+            # デフォルトまたは "all" の場合はすべて取得
+            daily_stats = self.repository.get_daily_stats(start_date, end_date)
+            weekly_stats = self.repository.get_weekly_stats(start_date, end_date)
+            monthly_stats = self.repository.get_monthly_stats(start_date, end_date)
 
         return {
             "period": {
@@ -85,15 +93,23 @@ class GetStatisticsSummaryUseCase:
             start_date = date(today.year, today.month, 1)
             end_date = today
         else:  # "all"
-            # 全期間（過去1年分を取得）
+            # 過去1年分を取得（コメントと実装を一致させる）
             start_date = date(today.year - 1, 1, 1)
             end_date = today
 
-        summary = self.repository.get_statistics(start_date, end_date)
-
-        # 平均値を計算
+        # daily_stats からサマリー情報を計算（1回のDBアクセスで済む）
         daily_stats = self.repository.get_daily_stats(start_date, end_date)
+        
         if daily_stats:
+            # daily_stats からサマリー情報を計算
+            total_tasks = sum(total for _, total, _, _ in daily_stats)
+            completed_tasks = sum(completed for _, _, completed, _ in daily_stats)
+            incomplete_tasks = total_tasks - completed_tasks
+            completion_rate = (
+                completed_tasks / total_tasks if total_tasks > 0 else 0.0
+            )
+            
+            # 平均値を計算
             total_days = len(daily_stats)
             average_daily_tasks = sum(total for _, total, _, _ in daily_stats) / total_days
             average_daily_completion_rate = (
@@ -101,15 +117,19 @@ class GetStatisticsSummaryUseCase:
                 / total_days
             )
         else:
+            total_tasks = 0
+            completed_tasks = 0
+            incomplete_tasks = 0
+            completion_rate = 0.0
             average_daily_tasks = 0.0
             average_daily_completion_rate = 0.0
 
         return {
             "period": period,
-            "total_tasks": summary["total_tasks"],
-            "completed_tasks": summary["completed_tasks"],
-            "incomplete_tasks": summary["incomplete_tasks"],
-            "completion_rate": summary["completion_rate"],
+            "total_tasks": total_tasks,
+            "completed_tasks": completed_tasks,
+            "incomplete_tasks": incomplete_tasks,
+            "completion_rate": completion_rate,
             "average_daily_tasks": average_daily_tasks,
             "average_daily_completion_rate": average_daily_completion_rate,
         }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { format, subDays } from 'date-fns';
 import { statisticsApi } from '../../services/api';
 import { Statistics } from '../../types/statistics';
@@ -20,7 +20,7 @@ export const StatisticsDashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStatistics = async () => {
+  const fetchStatistics = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -32,12 +32,11 @@ export const StatisticsDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [startDate, endDate]);
 
   useEffect(() => {
     fetchStatistics();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startDate, endDate]);
+  }, [fetchStatistics]);
 
   return (
     <div className="statistics-dashboard">

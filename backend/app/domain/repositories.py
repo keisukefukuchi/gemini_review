@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict, Tuple, Any
 from datetime import date
 from app.domain.entities import Task
 
@@ -40,7 +40,7 @@ class TaskRepository(ABC):
     @abstractmethod
     def get_statistics(
         self, start_date: date, end_date: date
-    ) -> Dict[str, any]:
+    ) -> Dict[str, Any]:
         """期間内の統計情報を取得"""
         pass
 
