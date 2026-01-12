@@ -215,4 +215,3 @@ docker-compose up -d
 ## ライセンス
 
 MIT
-# gemini_review
