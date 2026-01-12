@@ -1,0 +1,84 @@
+name: Cleanup after merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  cleanup:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete merged branch
+        run: |
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+          
+          # 保護ブランチは削除しない
+          if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "master" || "$BRANCH_NAME" == "develop" ]]; then
+            echo "Skipping branch deletion for $BRANCH_NAME (protected branch)"
+            exit 0
+          fi
+          
+          # マージされたブランチがfeature/*、fix/*、hotfix/*、bugfix/*のいずれかである場合のみ削除
+          if [[ "$BRANCH_NAME" =~ ^(feature|fix|hotfix|bugfix)/.* ]]; then
+            echo "Deleting branch: $BRANCH_NAME"
+            git push origin --delete "$BRANCH_NAME" || echo "Branch $BRANCH_NAME may have already been deleted or deletion failed"
+          else
+            echo "Skipping branch deletion for $BRANCH_NAME (not a feature/fix/hotfix/bugfix branch)"
+          fi
+
+      - name: Close related issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+            const prTitle = context.payload.pull_request.title || '';
+            
+            // Issue番号を抽出（#123、#456、closes #789、fixes #101などの形式）
+            const issuePattern = /(?:close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved)\s+#(\d+)/gi;
+            const directIssuePattern = /#(\d+)/g;
+            
+            const issues = new Set();
+            
+            // PR本文とタイトルからissue番号を抽出
+            let match;
+            while ((match = issuePattern.exec(prBody + '\n' + prTitle)) !== null) {
+              issues.add(parseInt(match[1]));
+            }
+            
+            // 直接的な#番号も抽出（ただし、close/fixなどのキーワードがない場合も含める）
+            const allMatches = [...(prBody + '\n' + prTitle).matchAll(directIssuePattern)];
+            for (const m of allMatches) {
+              issues.add(parseInt(m[1]));
+            }
+            
+            // 各issueをクローズ
+            for (const issueNumber of issues) {
+              try {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  state: 'closed'
+                });
+                console.log(`Closed issue #${issueNumber}`);
+              } catch (error) {
+                console.log(`Failed to close issue #${issueNumber}: ${error.message}`);
+              }
+            }
+            
+            if (issues.size === 0) {
+              console.log('No related issues found to close');
+            }
