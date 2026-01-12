@@ -25,7 +25,7 @@ def get_repository(db: Session = Depends(get_db)) -> SQLAlchemyTaskRepository:
 def get_statistics(
     start_date: date = Query(..., alias="start_date"),
     end_date: date = Query(..., alias="end_date"),
-    group_by: str = Query("day", alias="group_by"),
+    group_by: str = Query("day", alias="group_by", enum=["day", "week", "month"]),
     repository: SQLAlchemyTaskRepository = Depends(get_repository),
 ):
     """統計情報取得"""
@@ -35,7 +35,7 @@ def get_statistics(
 
 @router.get("/summary", response_model=StatisticsSummaryResponse)
 def get_statistics_summary(
-    period: str = Query("all", alias="period"),
+    period: str = Query("all", alias="period", enum=["today", "week", "month", "all"]),
     repository: SQLAlchemyTaskRepository = Depends(get_repository),
 ):
     """統計サマリー取得"""

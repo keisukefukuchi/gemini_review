@@ -1,7 +1,7 @@
 from typing import List, Optional, Dict, Tuple, Any
 from datetime import date, time, timedelta
 from sqlalchemy.orm import Session
-from sqlalchemy import func, and_, Integer, extract, case
+from sqlalchemy import func, and_, Integer, extract, case, text
 from app.domain.entities import Task
 from app.domain.repositories import TaskRepository
 from app.infrastructure.models import TaskModel
@@ -157,8 +157,6 @@ class SQLAlchemyTaskRepository(TaskRepository):
         self, start_date: date, end_date: date
     ) -> List[Tuple[date, date, int, int, float]]:
         """週別統計を取得（DB側で週ごとに集計）"""
-        from sqlalchemy import text
-        
         # データベースの種類を確認
         dialect_name = self.db.bind.dialect.name
         
@@ -222,7 +220,7 @@ class SQLAlchemyTaskRepository(TaskRepository):
                     }
 
                 weekly_data[week_key]["total_tasks"] += total
-                weekly_data[week_key]["completed_tasks"] += completed
+                weekly_data[week_key]["completed_tasks"] += completed or 0
 
             result = []
             for week_key in sorted(weekly_data.keys()):

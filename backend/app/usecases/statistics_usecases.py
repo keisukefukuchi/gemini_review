@@ -94,25 +94,32 @@ class GetStatisticsSummaryUseCase:
             start_date = date(today.year - 1, 1, 1)
             end_date = today
 
-        # サマリー情報をDB側で効率的に取得
-        summary = self.repository.get_statistics(start_date, end_date)
-        total_tasks = summary.get("total_tasks", 0)
-        completed_tasks = summary.get("completed_tasks", 0)
-        incomplete_tasks = summary.get("incomplete_tasks", 0)
-        completion_rate = summary.get("completion_rate", 0.0)
+        # daily_statsからサマリー情報と平均値を計算（1回のDBアクセスで済む）
+        daily_stats = self.repository.get_daily_stats(start_date, end_date)
         
-        # 平均値の計算のために日別データを取得
-        average_daily_tasks = 0.0
-        average_daily_completion_rate = 0.0
-        if total_tasks > 0:
-            daily_stats = self.repository.get_daily_stats(start_date, end_date)
-            if daily_stats:
-                total_days = len(daily_stats)
-                average_daily_tasks = sum(total for _, total, _, _ in daily_stats) / total_days
-                average_daily_completion_rate = (
-                    sum(completion_rate for _, _, _, completion_rate in daily_stats)
-                    / total_days
-                )
+        if daily_stats:
+            # daily_statsからサマリー情報を計算
+            total_tasks = sum(total for _, total, _, _ in daily_stats)
+            completed_tasks = sum(completed for _, _, completed, _ in daily_stats)
+            incomplete_tasks = total_tasks - completed_tasks
+            completion_rate = (
+                completed_tasks / total_tasks if total_tasks > 0 else 0.0
+            )
+            
+            # 平均値を計算
+            total_days = len(daily_stats)
+            average_daily_tasks = sum(total for _, total, _, _ in daily_stats) / total_days
+            average_daily_completion_rate = (
+                sum(completion_rate for _, _, _, completion_rate in daily_stats)
+                / total_days
+            )
+        else:
+            total_tasks = 0
+            completed_tasks = 0
+            incomplete_tasks = 0
+            completion_rate = 0.0
+            average_daily_tasks = 0.0
+            average_daily_completion_rate = 0.0
 
         return {
             "period": period,

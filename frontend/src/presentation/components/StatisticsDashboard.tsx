@@ -24,7 +24,7 @@ export const StatisticsDashboard: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await statisticsApi.getStatistics(startDate, endDate);
+      const data = await statisticsApi.getStatistics(startDate, endDate, viewMode);
       setStatistics(data);
     } catch (err) {
       console.error('Failed to fetch statistics:', err);
@@ -32,7 +32,7 @@ export const StatisticsDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate, viewMode]);
 
   useEffect(() => {
     fetchStatistics();
