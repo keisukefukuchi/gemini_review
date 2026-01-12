@@ -1,0 +1,259 @@
+.task-item {
+  margin-bottom: 0;
+  position: relative;
+}
+
+.task-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+  border: 2px solid rgba(102, 126, 234, 0.1);
+  transition: all 0.3s ease;
+}
+
+.task-content:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+  transform: translateY(-2px);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.task-content.completed {
+  opacity: 0.7;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.task-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #667eea;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #4caf50;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.task-checkbox svg {
+  font-size: 14px;
+}
+
+.task-checkbox:hover {
+  border-color: #4caf50;
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+  transform: scale(1.1);
+}
+
+.task-checkbox:active {
+  transform: scale(0.95);
+}
+
+.expand-button {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.expand-button svg {
+  font-size: 9px;
+}
+
+.expand-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+.expand-placeholder {
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.task-children {
+  margin-top: 4px;
+  padding-left: 12px;
+  border-left: 2px solid #667eea;
+  border-radius: 4px;
+}
+
+.task-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  pointer-events: none;
+}
+
+.task-info * {
+  pointer-events: auto;
+}
+
+.task-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  cursor: grab;
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: none;
+}
+
+.task-title:active {
+  cursor: grabbing;
+}
+
+
+.task-deadline {
+  font-size: 13px;
+  color: #ff6b35;
+  font-weight: 600;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #fff5f0 0%, #ffe8e0 100%);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid #ff6b35;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-deadline svg {
+  font-size: 12px;
+}
+
+.task-memo {
+  font-size: 16px;
+  cursor: help;
+  filter: drop-shadow(0 2px 4px rgba(102, 126, 234, 0.3));
+  transition: transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  color: #667eea;
+}
+
+.task-memo:hover {
+  transform: scale(1.2);
+}
+
+.task-memo svg {
+  font-size: 16px;
+}
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.action-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.1);
+}
+
+.action-button svg {
+  font-size: 12px;
+}
+
+.action-button:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  color: white;
+}
+
+.action-button:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.action-button.add-subtask {
+  font-weight: bold;
+  color: #2196f3;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-color: #2196f3;
+}
+
+.action-button.add-subtask svg {
+  font-size: 14px;
+}
+
+.action-button.add-subtask:hover {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: white;
+}
+
+.action-button.edit {
+  color: #ff9800;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+}
+
+.action-button.edit svg {
+  font-size: 14px;
+}
+
+.action-button.edit:hover {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+}
+
+.action-button.delete {
+  color: #f44336;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+}
+
+.action-button.delete svg {
+  font-size: 14px;
+}
+
+.action-button.delete:hover {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  color: white;
+}
+
+
+@media (max-width: 768px) {
+  .task-main {
+    flex-wrap: wrap;
+  }
+
+  .task-info {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .task-actions {
+    margin-left: auto;
+  }
+}
