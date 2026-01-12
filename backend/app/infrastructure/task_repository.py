@@ -135,7 +135,7 @@ class SQLAlchemyTaskRepository(TaskRepository):
             self.db.query(
                 TaskModel.date,
                 func.count(TaskModel.id).label("total_tasks"),
-                func.sum(func.cast(TaskModel.completed, Integer)).label(
+                func.sum(case((TaskModel.completed == True, 1), else_=0)).label(
                     "completed_tasks"
                 ),
             )
@@ -171,7 +171,7 @@ class SQLAlchemyTaskRepository(TaskRepository):
                         text("INTERVAL WEEKDAY(TaskModel.date) DAY")
                     ).label("week_start"),
                     func.count(TaskModel.id).label("total_tasks"),
-                    func.sum(func.cast(TaskModel.completed, Integer)).label("completed_tasks"),
+                    func.sum(case((TaskModel.completed == True, 1), else_=0)).label("completed_tasks"),
                 )
                 .filter(and_(TaskModel.date >= start_date, TaskModel.date <= end_date))
                 .group_by(text("DATE_SUB(TaskModel.date, INTERVAL WEEKDAY(TaskModel.date) DAY)"))
@@ -184,7 +184,7 @@ class SQLAlchemyTaskRepository(TaskRepository):
                 self.db.query(
                     func.date_trunc('week', TaskModel.date).label("week_start"),
                     func.count(TaskModel.id).label("total_tasks"),
-                    func.sum(func.cast(TaskModel.completed, Integer)).label("completed_tasks"),
+                    func.sum(case((TaskModel.completed == True, 1), else_=0)).label("completed_tasks"),
                 )
                 .filter(and_(TaskModel.date >= start_date, TaskModel.date <= end_date))
                 .group_by(func.date_trunc('week', TaskModel.date))
@@ -197,7 +197,7 @@ class SQLAlchemyTaskRepository(TaskRepository):
                 self.db.query(
                     TaskModel.date,
                     func.count(TaskModel.id).label("total_tasks"),
-                    func.sum(func.cast(TaskModel.completed, Integer)).label("completed_tasks"),
+                    func.sum(case((TaskModel.completed == True, 1), else_=0)).label("completed_tasks"),
                 )
                 .filter(and_(TaskModel.date >= start_date, TaskModel.date <= end_date))
                 .group_by(TaskModel.date)
@@ -270,7 +270,7 @@ class SQLAlchemyTaskRepository(TaskRepository):
                 extract("year", TaskModel.date).label("year"),
                 extract("month", TaskModel.date).label("month"),
                 func.count(TaskModel.id).label("total_tasks"),
-                func.sum(func.cast(TaskModel.completed, Integer)).label(
+                func.sum(case((TaskModel.completed == True, 1), else_=0)).label(
                     "completed_tasks"
                 ),
             )

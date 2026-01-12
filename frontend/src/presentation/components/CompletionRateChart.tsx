@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -28,10 +28,10 @@ export const CompletionRateChart: React.FC<CompletionRateChartProps> = ({
 }) => {
   const chartData = useChartData({ dailyStats, weeklyStats, monthlyStats, viewMode });
   
-  const data = chartData.map((item) => ({
+  const data = useMemo(() => chartData.map((item) => ({
     date: item.date,
     completionRate: item.completionRate,
-  }));
+  })), [chartData]);
 
   return (
     <div className="chart-container">
