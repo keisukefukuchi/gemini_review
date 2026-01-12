@@ -13,6 +13,7 @@ import {
 import { TaskList } from '../presentation/components/TaskList';
 import { TaskForm } from '../presentation/components/TaskForm';
 import { TaskEditModal } from '../presentation/components/TaskEditModal';
+import { StatisticsDashboard } from '../presentation/components/StatisticsDashboard';
 import '../presentation/App.css';
 
 // 依存性の注入
@@ -33,6 +34,7 @@ function App() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showCompleted, setShowCompleted] = useState(true);
   const [scrollToNextIncomplete, setScrollToNextIncomplete] = useState<number | null>(null);
+  const [showStatistics, setShowStatistics] = useState(false);
 
   // タスク一覧を取得
   const fetchTasks = async () => {
@@ -183,12 +185,21 @@ function App() {
               <span>完了済みを表示</span>
             </label>
             {!showForm && (
-              <button
-                className="add-task-button"
-                onClick={() => setShowForm(true)}
-              >
-                + タスクを追加
-              </button>
+              <>
+                <button
+                  className="statistics-button"
+                  onClick={() => setShowStatistics(true)}
+                  title="統計・分析ダッシュボード"
+                >
+                  📊 統計
+                </button>
+                <button
+                  className="add-task-button"
+                  onClick={() => setShowForm(true)}
+                >
+                  + タスクを追加
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -236,6 +247,25 @@ function App() {
           onSave={handleUpdateTask}
           onClose={() => setEditingTask(null)}
         />
+      )}
+
+      {showStatistics && (
+        <div className="modal-overlay" onClick={() => setShowStatistics(false)}>
+          <div className="modal-content statistics-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>統計・分析ダッシュボード</h2>
+              <button
+                className="modal-close-button"
+                onClick={() => setShowStatistics(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <StatisticsDashboard />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

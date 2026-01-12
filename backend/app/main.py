@@ -24,7 +24,9 @@ app.add_middleware(
 
 # ルーター登録
 from app.presentation import controllers
+from app.routers import statistics
 app.include_router(controllers.router)
+app.include_router(statistics.router)
 
 
 @app.get("/")
