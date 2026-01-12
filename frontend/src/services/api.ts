@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Task, TaskCreate, TaskUpdate } from '../types/task';
+import { Statistics, StatisticsSummary } from '../types/statistics';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -58,5 +59,31 @@ export const taskApi = {
     await api.post('/api/v1/tasks/dummy-data', null, {
       params: { date },
     });
+  },
+};
+
+export const statisticsApi = {
+  // 統計情報取得
+  getStatistics: async (
+    startDate: string,
+    endDate: string,
+    groupBy: string = 'day'
+  ): Promise<Statistics> => {
+    const response = await api.get('/api/v1/statistics', {
+      params: {
+        start_date: startDate,
+        end_date: endDate,
+        group_by: groupBy,
+      },
+    });
+    return response.data;
+  },
+
+  // 統計サマリー取得
+  getSummary: async (period: string = 'all'): Promise<StatisticsSummary> => {
+    const response = await api.get('/api/v1/statistics/summary', {
+      params: { period },
+    });
+    return response.data;
   },
 };

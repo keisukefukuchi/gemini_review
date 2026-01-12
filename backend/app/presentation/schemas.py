@@ -69,3 +69,56 @@ class TaskResponse(TaskBase):
 
 class TaskListResponse(BaseModel):
     tasks: List[TaskResponse]
+
+
+# 統計関連スキーマ
+class DailyStatResponse(BaseModel):
+    date: date
+    total_tasks: int
+    completed_tasks: int
+    completion_rate: float
+
+
+class WeeklyStatResponse(BaseModel):
+    week_start: date
+    week_end: date
+    total_tasks: int
+    completed_tasks: int
+    completion_rate: float
+
+
+class MonthlyStatResponse(BaseModel):
+    month: str  # YYYY-MM形式
+    total_tasks: int
+    completed_tasks: int
+    completion_rate: float
+
+
+class PeriodResponse(BaseModel):
+    start_date: date
+    end_date: date
+
+
+class SummaryResponse(BaseModel):
+    total_tasks: int
+    completed_tasks: int
+    incomplete_tasks: int
+    completion_rate: float
+
+
+class StatisticsResponse(BaseModel):
+    period: PeriodResponse
+    summary: SummaryResponse
+    daily_stats: List[DailyStatResponse]
+    weekly_stats: List[WeeklyStatResponse]
+    monthly_stats: List[MonthlyStatResponse]
+
+
+class StatisticsSummaryResponse(BaseModel):
+    period: str  # "today", "week", "month", "all"
+    total_tasks: int
+    completed_tasks: int
+    incomplete_tasks: int
+    completion_rate: float
+    average_daily_tasks: Optional[float] = None
+    average_daily_completion_rate: Optional[float] = None
